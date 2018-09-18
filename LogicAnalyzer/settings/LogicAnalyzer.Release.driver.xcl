@@ -1,0 +1,19 @@
+"--endian=little" 
+
+"--cpu=Cortex-M0" 
+
+"--fpu=None" 
+
+"-p" 
+
+"C:\Program Files (x86)\IAR Systems\Embedded Workbench 7.4\arm\CONFIG\debugger\ST\STM32F042F6.ddf" 
+
+"--semihosting=none" 
+
+"--device=STM32F042F6" 
+
+"--multicore_nr_of_cores=1" 
+
+
+
+
