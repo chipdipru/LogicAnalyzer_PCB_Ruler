@@ -1,0 +1,157 @@
+﻿<Window x:Class="LogicAnalyzer.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:LogicAnalyzer"
+        mc:Ignorable="d" 
+        Title="PCB Ruler логический анализатор" Height="640" Width="1000" MinWidth="1000" MinHeight="640">
+    <Window.Background>
+        <ImageBrush TileMode="Tile" ImageSource="images/back.jpg"/>
+    </Window.Background>
+    <Grid x:Name="MainGrid">
+        <DockPanel Margin="10">
+            <Border DockPanel.Dock="Top" Style="{StaticResource BorderStyle}" Margin="0" VerticalAlignment="Top" BorderThickness="0,0,0,2" Height="42">
+                <StackPanel Orientation="Horizontal">
+                    <Label x:Name="label" Style="{StaticResource LabelStyle}" Content="Количество выборок" HorizontalAlignment="Left" VerticalAlignment="Top"/>
+                    <ComboBox x:Name="Samples" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="5,5,0,0" SelectedIndex="0" Width="60"/>
+                    <Label x:Name="label1" Style="{StaticResource LabelStyle}" Content="Частота" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="5,0,0,0"/>
+                    <ComboBox x:Name="Frequencies" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="5,5,0,0" SelectedIndex="0" Width="90"/>
+                    <Button x:Name="StartButton" ToolTip="Начать захват" Style="{StaticResource ToolButtonStyle}" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,0,0,0" Click="StartButton_Click">
+                        <Image Source="images/start_32x32.png"/>
+                    </Button>
+                    <Button x:Name="TriggerButton" ToolTip="Триггеры" Style="{StaticResource ToolButtonStyle}" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,0,0,0" Click="TriggerButton_Click">
+                        <Image Source="images/radar_32x32.png"/>
+                    </Button>
+                    <Button x:Name="AnalyzerButton" ToolTip="Анализатор" Style="{StaticResource ToolButtonStyle}" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,0,0,0" Click="AnalyzerButton_Click">
+                        <Image Source="images/analyzer_32x32.png"/>
+                    </Button>
+                </StackPanel>
+            </Border>
+            <Border x:Name="TriggerBorderMain" DockPanel.Dock="Right" Style="{StaticResource BorderStyle}" Margin="0,-2,0,0" HorizontalAlignment="Right" Width="250" Visibility="Collapsed" BorderThickness="2">
+                <Grid>
+                    <CheckBox x:Name="TriggerActivationCheckBox" Style="{StaticResource CheckBoxStyle}" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="10,10,0,0" Content="активировать триггеры"/>
+                    <TextBox x:Name="ChnlsTrigHelpTextBox" Style="{StaticResource TextBoxStyle}" Margin="5,50,5,0" TextWrapping="Wrap" VerticalAlignment="Top" BorderBrush="{x:Null}" BorderThickness="0" Background="{x:Null}"/>
+                </Grid>
+            </Border>
+            <Border x:Name="AnalyzerBorderMain" DockPanel.Dock="Right" Style="{StaticResource BorderStyle}" Margin="0,-2,0,0" HorizontalAlignment="Right" Width="250" Visibility="Collapsed">
+                <Grid>
+                    <TextBlock Style="{StaticResource TextBlockStyle}" Margin="0,5,0,0" VerticalAlignment="Top" TextAlignment="Center" Text="Анализаторы" FontSize="14"/>
+                    <ComboBox x:Name="InterfaceComboBox" HorizontalAlignment="Left" Margin="10,30,0,0" VerticalAlignment="Top" Width="160" Height="25" SelectionChanged="InterfaceComboBox_SelectionChanged"/>
+                    <Button x:Name="AddInterfaceButton" ToolTip="Добавить" Style="{StaticResource SmallToolButtonStyle}" Content="+" HorizontalAlignment="Right" Margin="0,30,44,0" VerticalAlignment="Top" Click="AddInterfaceButton_Click"/>
+                    <Button x:Name="RemoveInterfaceButton" ToolTip="Удалить" Style="{StaticResource SmallToolButtonStyle}" Content="-" HorizontalAlignment="Right" Margin="0,30,10,0" VerticalAlignment="Top" Click="RemoveInterfaceButton_Click"/>
+                    <ListView x:Name="InterfaceItemsListView" Style="{StaticResource ListViewStyle}" Margin="0,133,0,0" Background="{x:Null}" Foreground="GreenYellow" MouseDoubleClick="InterfaceItemsListView_MouseDoubleClick">
+                        <ListView.ItemTemplate>
+                            <DataTemplate>
+                                <Grid Margin="0,0,0,5">
+                                    <TextBlock Text="{Binding CaptureTime}" HorizontalAlignment="Left" VerticalAlignment="Top"/>
+                                    <TextBlock Text="{Binding Item}" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="90,0,0,0"/>
+                                </Grid>
+                            </DataTemplate>
+                        </ListView.ItemTemplate>
+                    </ListView>
+                    <TextBox x:Name="SearchTextBox" HorizontalAlignment="Left" Height="24" Margin="68,70,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="134"/>
+                    <Button x:Name="SearchButton" ToolTip="Найти"  Style="{StaticResource SmallToolButtonStyle}" HorizontalAlignment="Left" Margin="44,70,0,0" VerticalAlignment="Top" Click="SearchButton_Click">
+                        <Image Source="images/search_24x24.png"/>
+                    </Button>
+                    <Button x:Name="PrevResButton" ToolTip="Перейти к предыдущему элементу" Style="{StaticResource SmallToolButtonStyle}" HorizontalAlignment="Left" Margin="10,70,0,0" VerticalAlignment="Top" Click="PrevResButton_Click">
+                        <Image Source="images/arrow_left_24x24.png"/>
+                    </Button>
+                    <Button x:Name="NextResButton" ToolTip="Перейти к следующему элементу" Style="{StaticResource SmallToolButtonStyle}" HorizontalAlignment="Left" Margin="211,70,0,0" VerticalAlignment="Top" Click="NextResButton_Click">
+                        <Image Source="images/arrow_right_24x24.png"/>
+                    </Button>
+                    <Label x:Name="label2" Style="{StaticResource LabelStyle}" Content="Количество совпадений:" HorizontalAlignment="Left" Margin="6,99,0,0" VerticalAlignment="Top"/>
+                    <TextBlock x:Name="MatchingCountTextBlock" HorizontalAlignment="Left" Margin="173,105,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Foreground="GreenYellow" FontSize="14"/>
+                    <ListView x:Name="AddInterListView" HorizontalAlignment="Left" Margin="120,30,0,0" VerticalAlignment="Top" Background="#FFDEDEDE" FontSize="14" Width="100" Visibility="Collapsed" MouseDoubleClick="AddInterListView_MouseDoubleClick">
+                        <ListView.Items>
+                            <TextBlock Text="I2C"/>
+                            <TextBlock Text="Отмена"/>
+                        </ListView.Items>
+                    </ListView>
+                </Grid>
+            </Border>
+            <DockPanel Height="536" VerticalAlignment="Top">
+                <Border BorderBrush="Black" BorderThickness="0" Margin="0,0,0,0" Width="90" HorizontalAlignment="Left">
+                    <Grid>
+                        <ItemsControl x:Name="ChnlInfo" Margin="0,43,0,20">
+                            <ItemsControl.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <StackPanel />
+                                </ItemsPanelTemplate>
+                            </ItemsControl.ItemsPanel>
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <Border Style="{StaticResource BorderStyle}" Width="Auto" Height="54" Margin="0,1,0,0" BorderThickness="0,2,0,0">
+                                        <DockPanel LastChildFill="True">
+                                            <Border Uid="{Binding Index}" ToolTip="Щелкните левой кнопкой мыши, чтобы изменить цвет" Background="Gray" Width="10" Height="Auto" BorderThickness="0" DockPanel.Dock="Right" MouseLeftButtonDown="ChannelColor_MouseLeftButtonDown"/>
+                                            <StackPanel DockPanel.Dock="Top" Orientation="Horizontal">
+                                                <TextBlock Text="канал " Style="{StaticResource TextBlockStyle}"/>
+                                                <TextBlock Text = "{Binding Index, Mode=TwoWay}" Style="{StaticResource TextBlockStyle}"/>
+                                                <Border Style="{StaticResource BorderStyle}" BorderThickness="0,0,0,2" Margin="9,0,0,0">
+                                                    <TextBlock x:Name="TrigSymbol" Uid="{Binding Index}" Text = "{Binding Trigger, Mode=TwoWay}" Style="{StaticResource TextBlockStyle}" ToolTip="Установка триггера" Width="20" TextAlignment="Center" MouseLeftButtonDown="Trigger_MouseLeftButtonDown"/>
+                                                </Border>
+                                            </StackPanel>
+                                            <TextBox Text = "{Binding Name, Mode=TwoWay}" Uid="{Binding Index}" VerticalAlignment="Bottom" Height="Auto" MaxLines="2" MaxLength="20" TextWrapping="Wrap" BorderBrush="{x:Null}" Foreground="GreenYellow" BorderThickness="0" HorizontalAlignment="Left" SelectionOpacity="0.6" LostKeyboardFocus="Name_LostKeyboardFocus" FontSize="12">
+                                                <TextBox.Background>
+                                                    <SolidColorBrush Color="White" Opacity="0"/>
+                                                </TextBox.Background>
+                                            </TextBox>
+                                        </DockPanel>
+                                    </Border>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </Grid>
+                </Border>
+                <Border Style="{StaticResource BorderStyle}" Margin="5,0" DockPanel.Dock="Bottom">
+                    <Grid>
+                        <Button x:Name="PrevFrame" ToolTip="Прокрутить влево" Style="{StaticResource ToolButtonStyle}" HorizontalAlignment="Left" Margin="10,3,0,3" VerticalAlignment="Top" Click="PrevFrameButton_Click">
+                            <Image Source="images/arrow_left_32x32.png"/>
+                        </Button>
+                        <Button x:Name="NextFrame" ToolTip="Прокрутить вправо" Style="{StaticResource ToolButtonStyle}" HorizontalAlignment="Left" Margin="50,3,0,0" VerticalAlignment="Top" Click="NextFrameButton_Click">
+                            <Image Source="images/arrow_right_32x32.png"/>
+                        </Button>
+                        <Button x:Name="ZoomOut" ToolTip="Уменьшить" Style="{StaticResource ToolButtonStyle}" HorizontalAlignment="Left" Margin="90,3,0,0" VerticalAlignment="Top" Click="ZoomOutButton_Click">
+                            <Image Source="images/zoom_out_32x32.png"/>
+                        </Button>
+                        <Button x:Name="ZoomIn" ToolTip="Увеличить" Style="{StaticResource ToolButtonStyle}" HorizontalAlignment="Left" Margin="130,3,0,0" VerticalAlignment="Top" Click="ZoomInButton_Click">
+                            <Image Source="images/zoom_in_32x32.png"/>
+                        </Button>
+                        <Button x:Name="MeasureButton" ToolTip="Измерение" Style="{StaticResource ToolButtonStyle}" HorizontalAlignment="Left" Margin="170,3,0,0" VerticalAlignment="Top" Click="MeasureButton_Click">
+                            <Image Source="images/measure_32x32.png"/>
+                        </Button>
+                        <Button x:Name="LineButton" ToolTip="Линейка" Style="{StaticResource ToolButtonStyle}" HorizontalAlignment="Left" Margin="210,3,0,0" VerticalAlignment="Top" Click="LineButton_Click">
+                            <Image Source="images/ruler_32x32.png"/>
+                        </Button>
+                    </Grid>
+                </Border>
+                <Canvas x:Name="GraphsCanvas" Margin="5,492,5,-472" Height="480" MouseWheel="GraphsCanvas_MouseWheel" MouseDown="GraphsCanvas_MouseDown" SizeChanged="GraphsCanvasSizeChanged" ClipToBounds="True">
+                    <Canvas.Background>
+                        <SolidColorBrush Color="#FFE8E7E7" Opacity="0"/>
+                    </Canvas.Background>
+                    <Canvas.RenderTransform>
+                        <TransformGroup>
+                            <ScaleTransform ScaleY = "-1" />
+                        </TransformGroup >
+                    </Canvas.RenderTransform >
+                    <Polyline x:Name="GraphPoly0" Stroke="Gray" StrokeThickness="2" VerticalAlignment="Top" Margin="0,385,0,0"/>
+                    <Polyline x:Name="GraphPoly1" Stroke="Gray" StrokeThickness="2" VerticalAlignment="Top" Margin="0,330,0,0"/>
+                    <Polyline x:Name="GraphPoly2" Stroke="Gray" StrokeThickness="2" VerticalAlignment="Top" Margin="0,275,0,0"/>
+                    <Polyline x:Name="GraphPoly3" Stroke="Gray" StrokeThickness="2" VerticalAlignment="Top" Margin="0,220,0,0"/>
+                    <Polyline x:Name="GraphPoly4" Stroke="Gray" StrokeThickness="2" VerticalAlignment="Top" Margin="0,165,0,0"/>
+                    <Polyline x:Name="GraphPoly5" Stroke="Gray" StrokeThickness="2" VerticalAlignment="Top" Margin="0,110,0,0"/>
+                    <Polyline x:Name="GraphPoly6" Stroke="Gray" StrokeThickness="2" VerticalAlignment="Top" Margin="0,55,0,0"/>
+                    <Polyline x:Name="GraphPoly7" Stroke="Gray" StrokeThickness="2" VerticalAlignment="Top" Margin="0,0,0,0"/>
+                    <Grid Margin="0,430,0,0" VerticalAlignment="Top"/>
+                    <Grid Margin="0,375,0,0" VerticalAlignment="Top"/>
+                    <Grid Margin="0,320,0,0" VerticalAlignment="Top"/>
+                    <Grid Margin="0,265,0,0" VerticalAlignment="Top"/>
+                    <Grid Margin="0,210,0,0" VerticalAlignment="Top"/>
+                    <Grid Margin="0,155,0,0" VerticalAlignment="Top"/>
+                    <Grid Margin="0,100,0,0" VerticalAlignment="Top"/>
+                    <Grid Margin="0,45,0,0" VerticalAlignment="Top"/>
+                </Canvas >
+            </DockPanel>
+        </DockPanel>
+    </Grid>
+</Window>
